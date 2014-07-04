@@ -4,7 +4,7 @@ module Lita
   module Handlers
     class Bitcoin < Handler
 
-      URL = "http://data.mtgox.com/api/1/BTCUSD/ticker"
+      URL = "https://api.bitcoinaverage.com/ticker/global/USD/last"
 
       route(/btc/i, :reply, command: true, help: {
         "btc" => "Returns the current BTC/USD exchange rate."
@@ -20,20 +20,9 @@ module Lita
       private
 
       def rate
-        if data && data["return"] && data["return"]["sell"]
-          data["return"]["sell"]["display"]
-        else
-          "UNKNOWN"
-        end
+        http.get(URL).body
       end
 
-      def data
-        MultiJson.load(ticker_response.body)
-      end
-
-      def ticker_response
-        http.get(URL)
-      end
     end
 
     Lita.register_handler(Bitcoin)
